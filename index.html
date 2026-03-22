@@ -431,10 +431,17 @@
 //  CONFIG — 여기서 계정/링크 수정
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// 계정 목록 (SHA-256 해시 대신 평문 — 배포 전 해시로 교체 가능)
-const ACCOUNTS = [
-  { id: 'iggg.studio', pw: '!Gnagoya~~~' },
+// 계정 목록 (SHA-256 해시 — id:pw 조합의 해시값)
+const ACCOUNT_HASHES = [
+  '9d5fd22a2536804c9a57d95e2f52e1dfc592b598760ff5f4a4bb23840cbcc06e',
 ];
+
+async function sha256(text) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 // 링크 데이터
 const LINKS = [
@@ -458,17 +465,16 @@ const LINKS = [
 
 const TOKEN_KEY = 'ig_links_token';
 
-function makeToken(id) {
-  return btoa(id + ':' + Date.now());
+function makeToken(id, hash) {
+  return btoa(JSON.stringify({ id, hash, ts: Date.now() }));
 }
 
 function checkAutoLogin() {
   const token = localStorage.getItem(TOKEN_KEY);
   if (token) {
     try {
-      const decoded = atob(token);
-      const id = decoded.split(':')[0];
-      if (ACCOUNTS.some(a => a.id === id)) {
+      const decoded = JSON.parse(atob(token));
+      if (decoded.hash && ACCOUNT_HASHES.includes(decoded.hash)) {
         showLinks();
         return;
       }
@@ -477,15 +483,16 @@ function checkAutoLogin() {
   }
 }
 
-function handleLogin() {
+async function handleLogin() {
   const id = document.getElementById('userId').value.trim();
   const pw = document.getElementById('userPw').value;
   const auto = document.getElementById('autoLogin').checked;
   const errEl = document.getElementById('loginError');
 
-  const account = ACCOUNTS.find(a => a.id === id && a.pw === pw);
+  const hash = await sha256(id + ':' + pw);
+  const valid = ACCOUNT_HASHES.includes(hash);
 
-  if (!account) {
+  if (!valid) {
     errEl.textContent = 'ID 또는 비밀번호가 일치하지 않습니다';
     errEl.classList.add('visible');
     document.querySelector('.login-box').classList.add('shake');
@@ -494,7 +501,7 @@ function handleLogin() {
   }
 
   if (auto) {
-    localStorage.setItem(TOKEN_KEY, makeToken(id));
+    localStorage.setItem(TOKEN_KEY, makeToken(id, hash));
   }
 
   showLinks();
