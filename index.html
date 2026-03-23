@@ -264,6 +264,11 @@
     margin-bottom: 2rem;
   }
 
+  .category + .category {
+    border-top: 1px solid var(--border);
+    padding-top: 1.2rem;
+  }
+
   .category-label {
     font-family: var(--mono);
     font-size: 0.6rem;
@@ -458,9 +463,19 @@ const LINKS = [
     items: [
       { name: '공사보고작성기', desc: 'iggg-report', url: 'https://iggg-report.vercel.app/', icon: '📝' },
       { name: '통합공정표관리', desc: 'iggg-ism', url: 'https://iggg-ism.vercel.app/', icon: '📋' },
+    ]
+  },
+  {
+    category: '',
+    items: [
       { name: '실측보고서 작성기', desc: 'iggg-report.com', url: 'https://iggg-report.com/', icon: '📐' },
-      { name: 'disto 애벌세탁기', desc: 'ig-disto-z0', url: 'https://ig-disto-z0.vercel.app/', icon: '🧹' },
+      { name: 'disto 애벌세탁기 z', desc: 'ig-disto-z0', url: 'https://ig-disto-z0.vercel.app/', icon: '🧹' },
       { name: 'disto 실측세탁기', desc: 'ig-disto', url: 'https://ig-disto.vercel.app/', icon: '🧽' },
+    ]
+  },
+  {
+    category: '',
+    items: [
       { name: '이지키친(EZkitchen)', desc: 'igggstudio.com', url: 'https://igggstudio.com/', icon: '🍳' },
       { name: '간이조도계산기', desc: 'iggg-lighting', url: 'https://iggg-lighting.vercel.app/', icon: '💡' },
     ]
