@@ -335,7 +335,7 @@ body > * { position: relative; z-index: 2; }
 }
 
 .logo-img-sm {
-  height: 28px;
+  height: 32px;
   width: auto;
   display: block;
   filter: var(--logo-filter);
@@ -570,6 +570,7 @@ body > * { position: relative; z-index: 2; }
 
   <div class="links-footer">
     <span>이견공간 · iggg studio</span>
+    <span>internal use only</span>
     <span>©2026</span>
   </div>
 </div>
@@ -699,6 +700,7 @@ async function handleLogin() {
 }
 
 function handleLogout() {
+  if (!confirm('로그아웃하시겠습니까?')) return;
   localStorage.removeItem(TOKEN_KEY);
   document.getElementById('linksScreen').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
