@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;900&family=JetBrains+Mono:wght@400;500&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 /* =========================================================
@@ -485,6 +485,13 @@ body > * { position: relative; z-index: 2; }
   min-width: 0;
 }
 
+.link-name.martian {
+  font-family: "Martian Mono", monospace;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: -0.02em;
+}
+
 .link-name {
   font-family: var(--ff-body);
   font-size: var(--fz-body);
@@ -741,7 +748,7 @@ const LINKS = [
     category: '',
     items: [
       { name: '제안서 작성기(Concept Proposal)', desc: 'proposal.igggstudio.com', url: 'https://proposal.igggstudio.com/', icon: '<svg viewBox="0 0 24 24"><rect x="-1" y="-1" width="26" height="26" stroke-width="0.1" fill="none" opacity="0.15"/><rect x="0" y="0" width="24" height="24" stroke-width="0.15" fill="none" opacity="0.25"/><rect x="1" y="1" width="22" height="22" stroke-width="0.2" fill="none" opacity="0.35"/><rect x="2" y="2" width="20" height="20" stroke-width="0.3" fill="none" opacity="0.5"/><rect x="3" y="3" width="18" height="18" stroke-width="0.35"/><line x1="3" y1="12" x2="15" y2="12" stroke-width="0.35"/><line x1="12" y1="3" x2="12" y2="12" stroke-width="0.35"/><rect x="14" y="14" width="5" height="5" stroke-width="0.2"/><line x1="15" y1="3" x2="15" y2="7" stroke-width="0.2"/><line x1="3" y1="7" x2="8" y2="7" stroke-width="0.2"/><circle cx="7" cy="7" r="3" stroke-width="0.15" stroke-dasharray="1 1"/><line x1="7" y1="4" x2="7" y2="10" stroke-width="0.15"/><line x1="4" y1="7" x2="10" y2="7" stroke-width="0.15"/><rect x="4" y="14" width="3" height="4" stroke-width="0.2"/><rect x="8" y="15" width="3" height="3" stroke-width="0.2"/></svg>' },
-      { name: 'ProEstimate&Docs(견적서 작성기)', iconColor: '#00264b', desc: 'iggg-estimate-web', url: 'https://iggg-estimate-web.vercel.app/', icon: ICONS.calc },
+      { name: 'ig works', font: 'martian', iconColor: '#00264b', desc: 'igggstudio.com', url: 'https://igggstudio.com/', icon: ICONS.calc },
     ]
   },
   {
@@ -855,7 +862,7 @@ function showLinks() {
       a.innerHTML = `
         <div class="link-icon" style="${item.bg ? 'background:'+item.bg+';border-color:'+item.bg+';' : ''}${item.iconColor ? '--icon-c:'+item.iconColor+';' : ''}">${item.iconColor ? item.icon.replace(/currentColor/g, item.iconColor).replace(/stroke="var\(--fg\)"/g, 'stroke="'+item.iconColor+'"') : item.icon}</div>
         <div class="link-info">
-          <div class="link-name">${item.name}</div>
+          <div class="link-name${item.font ? ' '+item.font : ''}">${item.name}</div>
           <div class="link-desc">${item.desc}</div>
         </div>
         <div class="link-arrow"><svg viewBox="0 0 20 20"><line x1="5" y1="10" x2="15" y2="10"/><polyline points="11 6 15 10 11 14"/></svg></div>
