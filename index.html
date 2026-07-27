@@ -2,8 +2,9 @@
 <html lang="ko" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script src="https://www.igggstudio.com/sso-gate.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>!G links</title><!-- v2.2 -->
+<title>!G links</title><!-- v2.3 -->
 <meta name="description" content="iggg studio · internal links">
 <meta property="og:title" content="!G links">
 <meta property="og:description" content="iggg studio · internal links">
@@ -732,16 +733,15 @@ const LINKS = [
   {
     category: '',
     items: [
-      { name: '공사보고 작성기', desc: 'iggg-report', url: 'https://iggg-report.vercel.app/', icon: ICONS.funnel },
-      { name: '통합 공정표 관리', desc: 'iggg-ism', url: 'https://iggg-ism.vercel.app/', icon: ICONS.week },
+      { name: '공사보고 작성기', desc: 'report.igggstudio.com', url: 'https://report.igggstudio.com/', icon: ICONS.funnel },
+      { name: '통합 공정표 관리', desc: 'ism.igggstudio.com', url: 'https://ism.igggstudio.com/', icon: ICONS.week },
     ]
   },
   {
     category: '',
     items: [
-      { name: '실측보고서 작성기', desc: 'iggg-report.com', url: 'https://iggg-report.com/', icon: ICONS.ruler },
+      { name: '실측보고서 작성기', desc: 'survey.igggstudio.com', url: 'https://survey.igggstudio.com/', icon: ICONS.ruler },
       { name: '실측세탁기(Disto Cleaner)', desc: 'ig-disto', url: 'https://cleaner.igggstudio.com/', icon: ICONS.layers },
-      /* { name: '주간일정 작성기', desc: 'ig-weekly-schedule', url: 'https://ig-weekly-schedule.vercel.app/', icon: ICONS.grid }, */
     ]
   },
   {
@@ -755,7 +755,8 @@ const LINKS = [
     category: '',
     items: [
       { name: '실측기(Bosch&Chrome)', desc: 'scan.igggstudio.com', url: 'https://scan.igggstudio.com/', icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" stroke-width="0.5" fill="none"/><line x1="12" y1="5" x2="12" y2="19" stroke-width="0.3"/><line x1="5" y1="12" x2="19" y2="12" stroke-width="0.3"/><circle cx="12" cy="12" r="3" stroke-width="0.4" fill="none"/><circle cx="12" cy="12" r="0.8" fill="currentColor" stroke="none"/><line x1="17" y1="7" x2="20" y2="4" stroke-width="0.4"/><line x1="20" y1="4" x2="22" y2="4" stroke-width="0.3"/><line x1="20" y1="4" x2="20" y2="2" stroke-width="0.3"/></svg>' },
-      { name: '간이 조도 계산기', desc: 'iggg-lighting', url: 'https://ig-lux-cal.vercel.app/', icon: ICONS.lux },
+      { name: '간이 조도 계산기', desc: 'lux.igggstudio.com', url: 'https://lux.igggstudio.com/', icon: ICONS.lux },
+      { name: '조명 자동배치(PRO)', desc: 'luxpro.igggstudio.com', url: 'https://luxpro.igggstudio.com/', icon: ICONS.lux },
     ]
   }
 ];
@@ -815,13 +816,9 @@ function cancelLogout() {
   document.getElementById('logoutConfirm').style.display = 'none';
 }
 function handleLogout() {
-  document.getElementById('logoutConfirm').style.display = 'none';
-  localStorage.removeItem(TOKEN_KEY);
-  document.getElementById('linksScreen').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('userId').value = '';
-  document.getElementById('userPw').value = '';
-  document.getElementById('loginError').classList.remove('visible');
+  // SSO 로그아웃 — 쿠키 지우고 ig works(세션 정본)로 이동
+  document.cookie = 'iggg_sso=; Path=/; Domain=.igggstudio.com; Max-Age=0';
+  location.href = 'https://www.igggstudio.com/';
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -883,7 +880,8 @@ document.addEventListener('keydown', e => {
 });
 
 // 자동 로그인 체크
-checkAutoLogin();
+// 자체 계정 로그인 제거(2026-07-27) — 입장 통제는 sso-gate.js(ig works SSO)
+showLinks();
 </script>
 </body>
 </html>
