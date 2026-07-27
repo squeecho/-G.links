@@ -633,7 +633,7 @@ body > * { position: relative; z-index: 2; }
       <span class="checkbox-custom"></span>
       <span>자동 로그인</span>
     </label>
-    <button class="btn-login" id="loginBtn" onclick="handleLogin()">enter</button>
+    <button class="btn-login" id="loginBtn" disabled>enter</button>
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
@@ -705,18 +705,6 @@ function showToast(msg) {
 //  CONFIG — 여기서 계정/링크 수정
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// 계정 목록 (SHA-256 해시 — id:pw 조합의 해시값)
-const ACCOUNT_HASHES = [
-  '9d5fd22a2536804c9a57d95e2f52e1dfc592b598760ff5f4a4bb23840cbcc06e',
-];
-
-async function sha256(text) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(text);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
 const ICONS = {
   // 공사보고 — 등각 투영 다층 평면 + 데이터 포인트
   report: '<svg viewBox="0 0 24 24"><path d="M3 14 L12 9 L21 14 L12 19 Z" stroke-width="0.5"/><path d="M3 10 L12 5 L21 10 L12 15 Z" stroke-width="0.4"/><path d="M3 6 L12 1 L21 6 L12 11 Z" stroke-width="0.3"/><line x1="3" y1="6" x2="3" y2="14" stroke-width="0.2"/><line x1="21" y1="6" x2="21" y2="14" stroke-width="0.2"/><line x1="12" y1="1" x2="12" y2="9" stroke-width="0.2"/><circle cx="8" cy="7.5" r="0.5" fill="currentColor" stroke="none"/><circle cx="15" cy="6" r="0.5" fill="currentColor" stroke="none"/><circle cx="10" cy="12" r="0.5" fill="currentColor" stroke="none"/><circle cx="16" cy="11" r="0.4" fill="currentColor" stroke="none"/><circle cx="6" cy="11" r="0.4" fill="currentColor" stroke="none"/><line x1="8" y1="7.5" x2="15" y2="6" stroke-width="0.2"/><line x1="10" y1="12" x2="16" y2="11" stroke-width="0.2"/><line x1="8" y1="7.5" x2="10" y2="12" stroke-width="0.15"/><line x1="12" y1="19" x2="12" y2="22" stroke-width="0.3" stroke-dasharray="0.5 1"/></svg>',
@@ -757,14 +745,14 @@ const LINKS = [
     category: '',
     items: [
       { name: '실측보고서 작성기', desc: 'survey.igggstudio.com', url: 'https://survey.igggstudio.com/', icon: ICONS.ruler },
-      { name: '실측세탁기(Disto Cleaner)', desc: 'ig-disto', url: 'https://cleaner.igggstudio.com/', icon: ICONS.layers },
+      { name: '실측세탁기(Disto Cleaner)', desc: 'cleaner.igggstudio.com', url: 'https://cleaner.igggstudio.com/', icon: ICONS.layers },
     ]
   },
   {
     category: '',
     items: [
       { name: '제안서 작성기(Concept Proposal)', desc: 'proposal.igggstudio.com', url: 'https://proposal.igggstudio.com/', icon: '<svg viewBox="0 0 24 24"><rect x="-1" y="-1" width="26" height="26" stroke-width="0.1" fill="none" opacity="0.15"/><rect x="0" y="0" width="24" height="24" stroke-width="0.15" fill="none" opacity="0.25"/><rect x="1" y="1" width="22" height="22" stroke-width="0.2" fill="none" opacity="0.35"/><rect x="2" y="2" width="20" height="20" stroke-width="0.3" fill="none" opacity="0.5"/><rect x="3" y="3" width="18" height="18" stroke-width="0.35"/><line x1="3" y1="12" x2="15" y2="12" stroke-width="0.35"/><line x1="12" y1="3" x2="12" y2="12" stroke-width="0.35"/><rect x="14" y="14" width="5" height="5" stroke-width="0.2"/><line x1="15" y1="3" x2="15" y2="7" stroke-width="0.2"/><line x1="3" y1="7" x2="8" y2="7" stroke-width="0.2"/><circle cx="7" cy="7" r="3" stroke-width="0.15" stroke-dasharray="1 1"/><line x1="7" y1="4" x2="7" y2="10" stroke-width="0.15"/><line x1="4" y1="7" x2="10" y2="7" stroke-width="0.15"/><rect x="4" y="14" width="3" height="4" stroke-width="0.2"/><rect x="8" y="15" width="3" height="3" stroke-width="0.2"/></svg>' },
-      { name: 'ig works', font: 'martian', iconColor: '#00264b', desc: 'igggstudio.com', url: 'https://www.igggstudio.com/', icon: ICONS.calc },
+      { name: 'ig works', font: 'martian', iconColor: '#00264b', desc: 'www.igggstudio.com', url: 'https://www.igggstudio.com/', icon: ICONS.calc },
     ]
   },
   {
@@ -779,52 +767,10 @@ const LINKS = [
 ];
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  AUTH LOGIC
+//  AUTH LOGIC — 자체 계정 로그인 제거(입장 통제=sso-gate.js).
+//  구 계정 해시·검증 함수는 공개 배포물에서 삭제(전수감사 2026-07-28),
+//  구 자동로그인 토큰은 아래 초기화에서 기기에서 청소한다.
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-const TOKEN_KEY = 'ig_links_token';
-
-function makeToken(id, hash) {
-  return btoa(JSON.stringify({ id, hash, ts: Date.now() }));
-}
-
-function checkAutoLogin() {
-  const token = localStorage.getItem(TOKEN_KEY);
-  if (token) {
-    try {
-      const decoded = JSON.parse(atob(token));
-      if (decoded.hash && ACCOUNT_HASHES.includes(decoded.hash)) {
-        showLinks();
-        return;
-      }
-    } catch {}
-    localStorage.removeItem(TOKEN_KEY);
-  }
-}
-
-async function handleLogin() {
-  const id = document.getElementById('userId').value.trim();
-  const pw = document.getElementById('userPw').value;
-  const auto = document.getElementById('autoLogin').checked;
-  const errEl = document.getElementById('loginError');
-
-  const hash = await sha256(id + ':' + pw);
-  const valid = ACCOUNT_HASHES.includes(hash);
-
-  if (!valid) {
-    errEl.textContent = 'ID 또는 비밀번호가 일치하지 않습니다';
-    errEl.classList.add('visible');
-    document.querySelector('.login-box').classList.add('shake');
-    setTimeout(() => document.querySelector('.login-box').classList.remove('shake'), 400);
-    return;
-  }
-
-  if (auto) {
-    localStorage.setItem(TOKEN_KEY, makeToken(id, hash));
-  }
-
-  showLinks();
-}
 
 function requestLogout() {
   document.getElementById('logoutConfirm').style.display = 'flex';
@@ -833,9 +779,10 @@ function cancelLogout() {
   document.getElementById('logoutConfirm').style.display = 'none';
 }
 function handleLogout() {
-  // SSO 로그아웃 — 쿠키 지우고 ig works(세션 정본)로 이동
+  // SSO 로그아웃 — 쿠키를 지우고 www 의 전역 로그아웃 진입점(?logout=1)으로 이동.
+  // (www 루트로만 가면 세션 정본(localStorage)이 쿠키를 재발급해 로그아웃이 무효였다 — 전수감사 2026-07-28)
   document.cookie = 'iggg_sso=; Path=/; Domain=.igggstudio.com; Max-Age=0';
-  location.href = 'https://www.igggstudio.com/';
+  location.href = 'https://www.igggstudio.com/?logout=1';
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -889,15 +836,8 @@ function showLinks() {
   });
 }
 
-// Enter 키 로그인
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') {
-    handleLogin();
-  }
-});
-
-// 자동 로그인 체크
 // 자체 계정 로그인 제거(2026-07-27) — 입장 통제는 sso-gate.js(ig works SSO)
+try { localStorage.removeItem('ig_links_token'); } catch (e) { /* 구 토큰 청소 실패 무해 */ }
 showLinks();
 // 로그인 계정 표시(사장 요청 2026-07-27) — iggg_sso 쿠키의 email
 try {
