@@ -356,6 +356,18 @@ body > * { position: relative; z-index: 2; }
   line-height: 1;
 }
 
+.account-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.account-email {
+  font-family: var(--ff-mono);
+  font-size: var(--fz-mono-s);
+  letter-spacing: var(--ls-mono);
+  color: var(--fg-mute);
+}
 .logout-btn {
   background: none;
   border: var(--line-1) solid var(--line-soft);
@@ -633,7 +645,10 @@ body > * { position: relative; z-index: 2; }
       <span class="links-hero-studio">iggg studio</span>
       <span class="links-hero-title">LINKS</span>
     </div>
-    <button class="logout-btn" id="logoutBtn" onclick="requestLogout()">logout</button>
+    <div class="account-box">
+      <span class="account-email" id="accountEmail"></span>
+      <button class="logout-btn" id="logoutBtn" onclick="requestLogout()">logout</button>
+    </div>
   </div>
 
   <!-- Logout confirm -->
@@ -882,6 +897,14 @@ document.addEventListener('keydown', e => {
 // 자동 로그인 체크
 // 자체 계정 로그인 제거(2026-07-27) — 입장 통제는 sso-gate.js(ig works SSO)
 showLinks();
+// 로그인 계정 표시(사장 요청 2026-07-27) — iggg_sso 쿠키의 email
+try {
+  const m = document.cookie.match(/(?:^|; )iggg_sso=([^;]*)/);
+  if (m) {
+    const email = (JSON.parse(decodeURIComponent(m[1])) || {}).email || '';
+    if (email) document.getElementById('accountEmail').textContent = email;
+  }
+} catch (e) { /* 표시 실패는 치명 아님 */ }
 </script>
 </body>
 </html>
